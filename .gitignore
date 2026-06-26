@@ -1,8 +1,5 @@
-# Node modules
 node_modules/
-**/node_modules/
-
-# Optional: OS and editor files
-.DS_Store
-.vscode/
+.env
 *.log
+.DS_Store
+Thumbs.db
