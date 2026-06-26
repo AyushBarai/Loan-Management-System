@@ -53,9 +53,9 @@ mongoose
       console.log(`📋 API docs: http://localhost:${PORT}/api`);
     });
   })
-  .catch((err) => {
-    console.error('❌ MongoDB connection failed:', err);
-    process.exit(1);
-  });
+.catch((err) => {
+  console.error('❌ MongoDB connection failed:', err);
+  // process.exit(1);  // removed — server stays alive
+});
 
 export default app;

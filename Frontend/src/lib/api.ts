@@ -1,60 +1,35 @@
-export type UserRole = 'borrower' | 'admin' | 'sales' | 'sanction' | 'disbursement' | 'collection';
-export type LoanStatus = 'applied' | 'sanctioned' | 'rejected' | 'disbursed' | 'closed';
-export type EmploymentMode = 'salaried' | 'self-employed' | 'unemployed';
+import axios from 'axios';
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-}
+// LEARN: Axios interceptors run before every request/response.
+// We use them to:
+//   1. Automatically attach JWT to every request header
+//   2. Handle 401 globally (redirect to login)
+const api = axios.create({
+  baseURL: '/api',
+  headers: { 'Content-Type': 'application/json' },
+});
 
-export interface Application {
-  _id: string;
-  userId: string;
-  fullName: string;
-  pan: string;
-  dateOfBirth: string;
-  monthlySalary: number;
-  employmentMode: EmploymentMode;
-  breApproved: boolean;
-  breFailedRules: string[];
-  salarySlipPath?: string;
-  completedSteps: number;
-}
+// ─── Request interceptor: attach token ───────────────────────────────
+api.interceptors.request.use((config) => {
+  // Read token from localStorage (set on login)
+  const token = localStorage.getItem('lms_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-export interface Loan {
-  _id: string;
-  userId: string | User;
-  applicationId: string | Application;
-  principal: number;
-  tenureDays: number;
-  interestRate: number;
-  simpleInterest: number;
-  totalRepayment: number;
-  totalPaid: number;
-  outstandingBalance: number;
-  status: LoanStatus;
-  rejectionReason?: string;
-  sanctionedAt?: string;
-  disbursedAt?: string;
-  closedAt?: string;
-  createdAt: string;
-}
+// ─── Response interceptor: handle 401 ────────────────────────────────
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('lms_token');
+      localStorage.removeItem('lms_user');
+      window.location.href = '/auth/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
-export interface Payment {
-  _id: string;
-  loanId: string;
-  utrNumber: string;
-  amount: number;
-  paymentDate: string;
-  balanceAfter: number;
-  recordedBy: { name: string };
-  createdAt: string;
-}
-
-export interface AuthState {
-  user: User | null;
-  token: string | null;
-  isLoading: boolean;
-}
+export default api;

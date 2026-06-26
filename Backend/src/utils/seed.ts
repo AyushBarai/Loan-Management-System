@@ -5,7 +5,7 @@
  */
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import { User } from '../models';
+import { User } from '../models/User';
 
 dotenv.config();
 

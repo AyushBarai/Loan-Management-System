@@ -1,4 +1,4 @@
-import { BREResult, EmploymentMode } from '.';
+import { BREResult, EmploymentMode } from '../types';
 
 // ─── Business Rule Engine ─────────────────────────────────────────────
 // LEARN: BRE lives on the SERVER, not the client. Reasons:
